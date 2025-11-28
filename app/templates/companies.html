@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Companies - Roofing Lead Manager{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Registered Companies</h2>
+    
+    {% if not companies %}
+    <div class="alert alert-error">
+        <strong>No companies registered yet</strong>
+        <a href="/register-company">Click here to register your first company</a>
+    </div>
+    {% else %}
+    
+    <div style="margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border-light);">
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Total Companies: <strong style="color: var(--text-dark);">{{ companies|length }}</strong></p>
+    </div>
+    
+    {% for company in companies %}
+    <div style="border: 1px solid var(--border-light); padding: 28px; margin-bottom: 24px; background: var(--bg-cream);">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div style="flex: 1;">
+                <h3 style="font-family: 'Crimson Pro', serif; color: var(--primary-navy); margin-bottom: 16px; font-size: 1.375rem; font-weight: 700;">{{ company.company_name }}</h3>
+                <p style="color: var(--text-dark); margin-bottom: 8px; font-size: 0.9rem;"><strong>Owner:</strong> {{ company.owner_name }}</p>
+                <p style="color: var(--text-dark); margin-bottom: 8px; font-size: 0.9rem;"><strong>Email:</strong> {{ company.owner_email }}</p>
+                <p style="color: var(--text-dark); margin-bottom: 8px; font-size: 0.9rem;"><strong>Phone:</strong> {{ company.owner_phone }}</p>
+                <p style="color: var(--text-dark); margin-bottom: 8px; font-size: 0.9rem;"><strong>GHL Location ID:</strong> {{ company.ghl_location_id }}</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-light);">
+                    <strong>Company ID:</strong> {{ company.id }} | 
+                    <strong>Registered:</strong> {{ company.created_at }}
+                </p>
+            </div>
+            <div>
+                <a href="/dashboard/{{ company.id }}" 
+                   style="display: inline-block; padding: 12px 24px; background: var(--accent-rust); color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; transition: all 0.2s;">
+                    View Dashboard
+                </a>
+            </div>
+        </div>
+        
+        {% if company.lead_count is defined %}
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-light);">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                <div>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Leads</p>
+                    <p style="font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 700; color: var(--primary-navy);">{{ company.lead_count }}</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Pending</p>
+                    <p style="font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 700; color: #6c757d;">{{ company.pending_count }}</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Success</p>
+                    <p style="font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 700; color: var(--success-green);">{{ company.success_count }}</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Failed</p>
+                    <p style="font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 700; color: var(--error-red);">{{ company.failed_count }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    
+    {% endif %}
+</div>
+{% endblock %}

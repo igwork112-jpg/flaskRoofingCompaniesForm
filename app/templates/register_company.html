@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Register Company - Roofing Lead Manager{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Register Roofing Company</h2>
+    
+    {% if success %}
+    <div class="alert alert-success">
+        <strong>Success</strong>
+        Company registered successfully.<br>
+        <strong>Company ID:</strong> {{ company_id }}<br>
+        <a href="/add-lead">Proceed to add leads for this company</a>
+    </div>
+    {% endif %}
+    
+    {% if errors %}
+    <div class="alert alert-error">
+        <strong>Error</strong>
+        Please correct the following issues:<br>
+        <ul style="margin-top: 10px; margin-left: 20px;">
+        {% for field, messages in errors.items() %}
+            {% for message in messages %}
+            <li>{{ field }}: {{ message }}</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="/register-company">
+        <div class="form-group">
+            <label for="company_name">Company Name <span class="required">*</span></label>
+            <input type="text" id="company_name" name="company_name" 
+                   placeholder="ABC Roofing Company" 
+                   value="{{ form_data.company_name or '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="owner_name">Owner Name <span class="required">*</span></label>
+            <input type="text" id="owner_name" name="owner_name" 
+                   placeholder="John Doe" 
+                   value="{{ form_data.owner_name or '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="owner_email">Owner Email <span class="required">*</span></label>
+            <input type="email" id="owner_email" name="owner_email" 
+                   placeholder="john@abcroofing.com" 
+                   value="{{ form_data.owner_email or '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="owner_phone">Owner Phone <span class="required">*</span></label>
+            <input type="tel" id="owner_phone" name="owner_phone" 
+                   placeholder="+1-555-1234" 
+                   value="{{ form_data.owner_phone or '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="ghl_location_id">GoHighLevel Location ID <span class="required">*</span></label>
+            <input type="text" id="ghl_location_id" name="ghl_location_id" 
+                   placeholder="loc_abc123xyz" 
+                   value="{{ form_data.ghl_location_id or '' }}" required>
+            <small style="display: block; margin-top: 8px;">
+                Enter 'test' if you don't have a GHL location ID yet
+            </small>
+        </div>
+        
+        <button type="submit">Register Company</button>
+    </form>
+</div>
+{% endblock %}

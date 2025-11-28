@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Add Lead - Roofing Lead Manager{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Add New Leads</h2>
+    
+    <!-- Tab Navigation -->
+    <div style="display: flex; gap: 0; margin-bottom: 32px; border-bottom: 2px solid var(--border-light);">
+        <button type="button" onclick="showTab('single')" id="singleTab" style="width: auto; padding: 14px 32px; background: var(--accent-rust); color: white; border: none; border-bottom: 3px solid var(--accent-rust); cursor: pointer; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.3px; text-transform: uppercase; margin-bottom: -2px;">
+            Single Lead
+        </button>
+        <button type="button" onclick="showTab('csv')" id="csvTab" style="width: auto; padding: 14px 32px; background: transparent; color: var(--text-muted); border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.3px; text-transform: uppercase; margin-bottom: -2px;">
+            CSV Upload
+        </button>
+    </div>
+    
+    {% if success %}
+    <div class="alert alert-success">
+        <strong>Success</strong>
+        {{ success_message or 'Lead added successfully!' }}<br>
+        {% if lead_id %}
+        <strong>Lead ID:</strong> {{ lead_id }}<br>
+        {% endif %}
+        {% if summary %}
+        <strong>Total Rows:</strong> {{ summary.total_rows }}<br>
+        <strong>Valid Leads:</strong> {{ summary.valid_rows }}<br>
+        <strong>Invalid Rows:</strong> {{ summary.invalid_rows }}<br>
+        <strong>Leads Created:</strong> {{ summary.leads_created }}<br>
+        {% endif %}
+        <a href="/add-lead">Add more leads</a> | 
+        <a href="/dashboard">View Dashboard</a>
+    </div>
+    {% endif %}
+    
+    {% if errors %}
+    <div class="alert alert-error">
+        <strong>Error</strong>
+        Please correct the following issues:<br>
+        <ul style="margin-top: 10px; margin-left: 20px;">
+        {% for field, messages in errors.items() %}
+            {% for message in messages %}
+            <li>{{ field }}: {{ message }}</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="alert alert-error">
+        <strong>Error</strong>
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if not companies %}
+    <div class="alert alert-error">
+        <strong>No Companies Found</strong>
+        You need to register a company before adding leads.<br>
+        <a href="/register-company">Click here to register a company</a>
+    </div>
+    {% else %}
+    
+    <!-- Single Lead Form -->
+    <div id="singleForm" style="display: block;">
+        <form method="POST" action="/add-lead">
+            <input type="hidden" name="upload_type" value="single">
+            
+            <div class="form-group">
+                <label for="company_id">Select Company <span class="required">*</span></label>
+                <select id="company_id" name="company_id" required>
+                    <option value="">Choose a company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}" {% if form_data and form_data.company_id == company.id|string %}selected{% endif %}>
+                        {{ company.company_name }} ({{ company.owner_name }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">Lead Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" 
+                       placeholder="Jane Smith" 
+                       value="{{ form_data.name or '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Lead Phone <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" 
+                       placeholder="+1-555-5678" 
+                       value="{{ form_data.phone or '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">Notes (Optional)</label>
+                <textarea id="notes" name="notes" 
+                          placeholder="Interested in roof repair, called about leak in kitchen">{{ form_data.notes or '' }}</textarea>
+            </div>
+            
+            <button type="submit">Add Lead</button>
+        </form>
+    </div>
+    
+    <!-- CSV Upload Form -->
+    <div id="csvForm" style="display: none;">
+        <div style="background: #fffbf0; padding: 24px; border: 1px solid #f4e4c1; border-left: 4px solid var(--accent-rust); margin-bottom: 32px;">
+            <h4 style="font-family: 'Crimson Pro', serif; color: var(--primary-navy); margin-bottom: 12px; font-size: 1.125rem; font-weight: 600;">CSV Format Requirements</h4>
+            <p style="color: var(--text-dark); margin-bottom: 12px; font-size: 0.9rem;">Your CSV file must include the following columns:</p>
+            <ul style="color: var(--text-dark); margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                <li><strong>name</strong> - Lead's full name (required)</li>
+                <li><strong>phone</strong> - Lead's phone number (required)</li>
+                <li><strong>notes</strong> - Additional notes (optional)</li>
+            </ul>
+            <p style="color: var(--text-dark); margin-top: 18px; font-weight: 600; font-size: 0.9rem;">Example CSV:</p>
+            <pre style="background: white; padding: 16px; border: 1px solid var(--border-light); overflow-x: auto; margin-top: 8px; font-size: 0.85rem; line-height: 1.6;">name,phone,notes
+John Smith,+1-555-1111,Interested in new roof
+Mary Johnson,+1-555-2222,Repair needed
+Bob Williams,+1-555-3333,Free inspection</pre>
+            <a href="/download-sample-csv" style="display: inline-block; margin-top: 16px; padding: 10px 20px; background: var(--secondary-slate); color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">Download Sample CSV</a>
+        </div>
+        
+        <form method="POST" action="/add-lead" enctype="multipart/form-data">
+            <input type="hidden" name="upload_type" value="csv">
+            
+            <div class="form-group">
+                <label for="csv_company_id">Select Company <span class="required">*</span></label>
+                <select id="csv_company_id" name="company_id" required>
+                    <option value="">Choose a company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}">
+                        {{ company.company_name }} ({{ company.owner_name }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="file">Choose CSV File <span class="required">*</span></label>
+                <input type="file" id="file" name="file" accept=".csv" required 
+                       style="padding: 16px; border: 2px dashed var(--border-light); background: var(--bg-cream);">
+                <small style="display: block; margin-top: 8px;">
+                    Maximum file size: 10MB
+                </small>
+            </div>
+            
+            <button type="submit">Upload CSV</button>
+        </form>
+    </div>
+    
+    {% endif %}
+</div>
+
+<script>
+function showTab(tab) {
+    const singleForm = document.getElementById('singleForm');
+    const csvForm = document.getElementById('csvForm');
+    const singleTab = document.getElementById('singleTab');
+    const csvTab = document.getElementById('csvTab');
+    
+    if (tab === 'single') {
+        singleForm.style.display = 'block';
+        csvForm.style.display = 'none';
+        singleTab.style.background = 'var(--accent-rust)';
+        singleTab.style.color = 'white';
+        singleTab.style.borderBottomColor = 'var(--accent-rust)';
+        csvTab.style.background = 'transparent';
+        csvTab.style.color = 'var(--text-muted)';
+        csvTab.style.borderBottomColor = 'transparent';
+    } else {
+        singleForm.style.display = 'none';
+        csvForm.style.display = 'block';
+        singleTab.style.background = 'transparent';
+        singleTab.style.color = 'var(--text-muted)';
+        singleTab.style.borderBottomColor = 'transparent';
+        csvTab.style.background = 'var(--accent-rust)';
+        csvTab.style.color = 'white';
+        csvTab.style.borderBottomColor = 'var(--accent-rust)';
+    }
+}
+</script>
+{% endblock %}
