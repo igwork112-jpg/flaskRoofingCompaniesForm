@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Roofing Lead Manager{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to Roofing Lead Manager</h2>
+    
+    <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 40px;">
+        This system provides comprehensive management for roofing companies and their lead portfolios. 
+        Register your company, upload leads, and track performance metrics through an integrated dashboard.
+    </p>
+    
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px;">
+        <div style="padding: 32px 24px; background: var(--bg-cream); border: 1px solid var(--border-light); border-left: 3px solid var(--accent-rust);">
+            <h3 style="font-family: 'Crimson Pro', serif; color: var(--primary-navy); font-size: 1.25rem; margin-bottom: 12px; font-weight: 600;">Register Company</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6;">Add a new roofing company to the system</p>
+            <a href="/register-company" style="display: inline-block; padding: 12px 24px; background: var(--accent-rust); color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.2s;">Get Started</a>
+        </div>
+        
+        <div style="padding: 32px 24px; background: var(--bg-cream); border: 1px solid var(--border-light); border-left: 3px solid var(--accent-rust);">
+            <h3 style="font-family: 'Crimson Pro', serif; color: var(--primary-navy); font-size: 1.25rem; margin-bottom: 12px; font-weight: 600;">Add Leads</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6;">Upload leads individually or via CSV file</p>
+            <a href="/add-lead" style="display: inline-block; padding: 12px 24px; background: var(--accent-rust); color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.2s;">Add Leads</a>
+        </div>
+        
+        <div style="padding: 32px 24px; background: var(--bg-cream); border: 1px solid var(--border-light); border-left: 3px solid var(--accent-rust);">
+            <h3 style="font-family: 'Crimson Pro', serif; color: var(--primary-navy); font-size: 1.25rem; margin-bottom: 12px; font-weight: 600;">Dashboard</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6;">View all companies and performance statistics</p>
+            <a href="/dashboard" style="display: inline-block; padding: 12px 24px; background: var(--accent-rust); color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.2s;">View Dashboard</a>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; padding: 24px; background: #fffbf0; border: 1px solid #f4e4c1; border-left: 4px solid var(--accent-rust);">
+        <h4 style="font-family: 'Crimson Pro', serif; color: var(--primary-navy); margin-bottom: 12px; font-size: 1.125rem; font-weight: 600;">System Overview</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+            <p style="color: var(--text-dark); font-size: 0.95rem;">
+                <strong>Total Companies:</strong> {{ stats.total_companies }}
+            </p>
+            <p style="color: var(--text-dark); font-size: 0.95rem;">
+                <strong>Total Leads:</strong> {{ stats.total_leads }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
